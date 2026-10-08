@@ -1,0 +1,25 @@
+{
+  "_comment": "arxiv_tool.py 故意未註冊(L3 練習,學員依手冊自己加)。library_tool=L3 外部 API 示範(Primo,免 key);course_tool=L4 大資料集示範(3018 門課)。",
+  "mcpServers": {
+    "hello_tool": {
+      "command": "uv",
+      "args": ["--directory", "mcp-server-py", "run", "python", "hello_tool.py"]
+    },
+    "teachers_tool": {
+      "command": "uv",
+      "args": ["--directory", "mcp-server-py", "run", "python", "teachers_tool.py"]
+    },
+    "weather_tool": {
+      "command": "uv",
+      "args": ["--directory", "mcp-server-py", "run", "python", "weather_tool.py"]
+    },
+    "library_tool": {
+      "command": "uv",
+      "args": ["--directory", "mcp-server-py", "run", "python", "library_tool.py"]
+    },
+    "course_tool": {
+      "command": "uv",
+      "args": ["--directory", "mcp-server-py", "run", "python", "course_tool.py"]
+    }
+  }
+}

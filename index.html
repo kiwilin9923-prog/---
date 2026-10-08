@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Fanghe Junior High School｜芳和實中 Mini AI Assistant</title>
+<style>
+:root{--blue:#1769d2;--light:#eef5ff;--line:#d7dee8;--ink:#263445;--muted:#6d7a8a}
+*{box-sizing:border-box} body{margin:0;background:#f4f7fb;color:var(--ink);font-family:system-ui,-apple-system,"Noto Sans TC","Microsoft JhengHei",sans-serif}
+.shell{max-width:980px;margin:28px auto;padding:0 18px}.head{display:flex;align-items:center;gap:14px;margin-bottom:14px}
+.logo{width:48px;height:48px;border-radius:14px;background:var(--blue);display:grid;place-items:center;color:white;font-size:25px}
+h1{font-size:25px;margin:0}.sub{color:var(--muted);font-size:14px;margin-top:3px}
+.card{background:white;border:1px solid var(--line);border-radius:16px;box-shadow:0 8px 24px #1b365d12;overflow:hidden}
+.chat{height:570px;overflow:auto;padding:18px}.msg{max-width:86%;padding:12px 14px;margin:9px 0;border-radius:12px;white-space:pre-wrap;line-height:1.65}
+.user{margin-left:auto;background:#dcecff}.ai{background:#fff;border:1px solid var(--line)}.role{font-size:12px;color:#7b8796;margin-bottom:4px}
+.quick{padding:12px 18px;border-top:1px solid var(--line);display:flex;gap:8px;flex-wrap:wrap}
+.quick button,.chips button{border:1px solid #bfd0e5;background:white;border-radius:999px;padding:7px 11px;cursor:pointer;color:#36526f}
+.quick button:hover,.chips button:hover{background:var(--light)}
+.helper{margin:0 18px 14px;padding:12px 14px;border:1px solid #cddaea;border-radius:12px;background:#f8fbff}
+.helper b{display:block;margin-bottom:8px}.chips{display:flex;gap:7px;flex-wrap:wrap}
+.entry{padding:0 18px 18px}.entry label{display:block;font-weight:600;margin-bottom:6px}
+textarea{width:100%;min-height:86px;border:1.5px solid #aab8c8;border-radius:9px;padding:11px;font:inherit;resize:vertical}
+.actions{display:flex;justify-content:space-between;align-items:center;margin-top:9px}.hint{font-size:12px;color:var(--muted)}
+.send{border:0;border-radius:8px;background:var(--blue);color:#fff;padding:10px 21px;font-weight:700;cursor:pointer}
+a{color:#1262b3}.status{padding:10px 18px;background:#f8fbff;border-bottom:1px solid var(--line);font-size:13px;color:#58708b}
+</style>
+</head>
+<body>
+<div class="shell">
+  <div class="head">
+    <div class="logo">🎓</div>
+    <div><h1>Fanghe Junior High School｜芳和實中 Mini AI Assistant</h1>
+    <div class="sub">臺北市芳和實驗中學｜校園公開資料智慧查詢 DEMO</div></div>
+  </div>
+  <div class="card">
+    <div class="status">資料原則：校規、分機、學生手冊、請假、獎懲、行動載具與行事曆以芳和實中官方來源為準。</div>
+    <div id="chat" class="chat"><div class="msg ai"><div class="role">AI</div>您好，我是芳和實中校園查詢小幫手。請直接輸入問題，或使用下方快速查詢。</div></div>
+    <div class="quick">
+      <button data-q="芳和實中分機">📞 查詢分機</button>
+      <button data-q="115學年度學生手冊">📘 學生手冊</button>
+      <button data-q="學生請假規定">📝 請假規定</button>
+      <button data-q="學生在校使用行動載具有哪些規定？">📱 行動載具</button>
+      <button data-q="學生獎懲規定">🏆 獎懲規定</button>
+      <button data-q="115學年度行事曆">🗓️ 行事曆</button>
+      <button data-q="今天臺北天氣？">☀️ 臺北天氣</button>
+    </div>
+    <div class="helper"><b>🔎 查詢小幫手</b><div class="chips">
+      <button data-q="生活輔導組分機是多少？">生輔組分機多少？</button>
+      <button data-q="教務處分機是多少？">教務處分機多少？</button>
+      <button data-q="輔導室分機是多少？">輔導室分機多少？</button>
+      <button data-q="小過的條件和處分是什麼？請附來源。">小過規定？</button>
+      <button data-q="學生請假需要哪些程序？請附來源。">請假程序？</button>
+    </div></div>
+    <div class="entry"><label for="q">輸入問題</label>
+      <textarea id="q" placeholder="例如：生活輔導組分機是多少？"></textarea>
+      <div class="actions"><span class="hint">按「送出」或 Ctrl+Enter 查詢</span><button id="send" class="send">送出</button></div>
+    </div>
+  </div>
+</div>
+<script>
+const chat=document.querySelector('#chat'), q=document.querySelector('#q'), send=document.querySelector('#send');
+function add(role,text){const d=document.createElement('div');d.className='msg '+(role==='user'?'user':'ai');const r=document.createElement('div');r.className='role';r.textContent=role==='user'?'你':'AI';const b=document.createElement('div');b.textContent=text;d.append(r,b);chat.append(d);chat.scrollTop=chat.scrollHeight}
+async function ask(text){text=(text||q.value).trim();if(!text)return;add('user',text);q.value='';send.disabled=true;send.textContent='查詢中…';
+try{const res=await fetch('/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({messages:[{role:'user',content:text}]})});const data=await res.json();add('assistant',data.reply||data.error||'查詢失敗');}
+catch(e){add('assistant','連線失敗：'+e.message)}finally{send.disabled=false;send.textContent='送出'}}
+send.onclick=()=>ask();q.addEventListener('keydown',e=>{if(e.ctrlKey&&e.key==='Enter')ask()});
+document.querySelectorAll('[data-q]').forEach(b=>b.onclick=()=>ask(b.dataset.q));
+</script>
+</body></html>
